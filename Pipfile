@@ -10,6 +10,7 @@ kaggle = "*"
 
 [packages]
 pandas-profiling = {extras = ["notebook"],version = "*"}
+scikit-learn = "*"
 
 [requires]
 python_version = "3.6"
