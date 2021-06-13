@@ -144,9 +144,24 @@ def plot_calibration(y_test, true_preds):
 plot_calibration(y_test, true_preds)
 plt.savefig('output/test_calibration.png')
 
-# roc, sensitivity at low alert rates
-final_model.score(x_test, y_test)
-final_model.feature_importances_
-# permutation importance for high cardinality variables
+# TODO: roc, sensitivity at low alert rates
+logging.info(f"Test set score: {final_model.score(x_test, y_test)}")
 
-# would then predice on test set and submit to kaggle
+# tends to inflate importance of high cardinality categorical variables and continuous
+rf_feat_imp = pd.Series(final_model.feature_importances_, index=x_train.columns.values)
+rf_feat_imp = rf_feat_imp.sort_values(ascending=False)
+rf_feat_imp.to_csv('output/feature_importance.csv')
+# VehBCost = acquisition cost paid for vehicle at time of purchase
+# odometer reading
+# auction/retail prices
+# purchase date
+# warranty cost
+
+
+
+# permutation importance for high cardinality variables
+# how does random reshuffling of the data affect model performance?
+# cons: more computationally intense
+
+# permutation methods don't return anything or take too long
+# possibly because of small sample size?
