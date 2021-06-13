@@ -1,4 +1,4 @@
-# high number of obs vs. feautures
+# Chose RF because high number of observations vs. features
 # low bias, high variance method
 # also could try knn or kernel svm
 
@@ -81,6 +81,7 @@ def get_models():
  
 
 # with more time (and more compute power), I would do random search over a grid of parameters
+# TODO: try CV on number of trees, bootstrap sample, # feature = sqrt of total # features
 def evaluate_model(model, X, y):
     """
     Run cross-validation on model and return scores
@@ -91,11 +92,14 @@ def evaluate_model(model, X, y):
 
 
 data_reader = DataReader('data/processed.pkl')
-# the larger max_sample models (>0.3) take 4+ hours each, so sampling for now for this prototype model
-data_reader.sample(size = 0.01)
+# TODO: the larger max_sample models (>0.3) take 4+ hours each, so sampling for now for this prototype model
+sample_size = 1
+logging.info(f"Sampling data using sample size = {sample_size}")
+data_reader.sample(size = sample_size)
 data_reader.define_y('IsBadBuy')
 x_train, x_test, y_train, y_test = data_reader.split_train_test()
 
+# TODO:
 # models = get_models()
 # results, names = list(), list()
 # for name, model in models.items():
@@ -121,7 +125,6 @@ true_index = list(final_model.classes_).index(1)
 true_preds = [pred[true_index] for pred in pred_class_probs]
 
 def plot_calibration(y_test, true_preds):
-
     fig = plt.figure(1, figsize=(10, 10))
     ax1 = plt.subplot2grid((3, 1), (0, 0), rowspan=2)
     ax2 = plt.subplot2grid((3, 1), (2, 0))
