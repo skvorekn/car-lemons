@@ -1,17 +1,4 @@
-# Chose RF because high number of observations vs. features
-# low bias, high variance method
-# also could try knn or kernel svm
-
-# also good interpretability vs. neural nets & svm (also qventus does not use nn)
-# lasso is also highly interpretable but maybe not as accurate
-
-# rf and kernel svm allow data to not be linear
-
-# Purpose: predict if car purchased at an auction is a kick to provide best inventory selection to their customers
-
-# check unbalanced class issues? 
-
-import pandas as pd
+ import pandas as pd
 import numpy as np
 import datetime
 from sklearn.ensemble import RandomForestClassifier
@@ -56,6 +43,7 @@ class DataReader():
         self.x = self.data.drop([self.dep_var], axis = 1)
 
     # assuming observations are unrelated, otherwise there would be leakage between train/test
+    # TODO: split by BYRNO
     def split_train_test(self, test_size=0.2):
         self.test_size = test_size
         x_train, x_test, y_train, y_test = train_test_split(self.x, self.y, 
@@ -92,9 +80,8 @@ def evaluate_model(model, X, y):
 
 
 data_reader = DataReader('data/processed.pkl')
-# TODO: the larger max_sample models (>0.3) take 4+ hours each, so sampling for now for this prototype model
-sample_size = 1
-logging.info(f"Sampling data using sample size = {sample_size}")
+# TODO: set largest sample possible time-wise for final model
+sample_size = 0.1
 data_reader.sample(size = sample_size)
 data_reader.define_y('IsBadBuy')
 x_train, x_test, y_train, y_test = data_reader.split_train_test()
@@ -124,6 +111,7 @@ pred_class_probs = final_model.predict_proba(x_test)
 true_index = list(final_model.classes_).index(1)
 true_preds = [pred[true_index] for pred in pred_class_probs]
 
+# TODO: module
 def plot_calibration(y_test, true_preds):
     fig = plt.figure(1, figsize=(10, 10))
     ax1 = plt.subplot2grid((3, 1), (0, 0), rowspan=2)
@@ -146,8 +134,8 @@ plt.savefig('output/test_calibration.png')
 
 # TODO: roc, sensitivity at low alert rates
 logging.info(f"Test set score: {final_model.score(x_test, y_test)}")
+# TODO: check unbalanced class issues?
 
-# tends to inflate importance of high cardinality categorical variables and continuous
 rf_feat_imp = pd.Series(final_model.feature_importances_, index=x_train.columns.values)
 rf_feat_imp = rf_feat_imp.sort_values(ascending=False)
 rf_feat_imp.to_csv('output/feature_importance.csv')
@@ -156,12 +144,3 @@ rf_feat_imp.to_csv('output/feature_importance.csv')
 # auction/retail prices
 # purchase date
 # warranty cost
-
-
-
-# permutation importance for high cardinality variables
-# how does random reshuffling of the data affect model performance?
-# cons: more computationally intense
-
-# permutation methods don't return anything or take too long
-# possibly because of small sample size?
