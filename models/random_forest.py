@@ -1,19 +1,21 @@
  import pandas as pd
 import numpy as np
 import datetime
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score, RepeatedStratifiedKFold, train_test_split
-from sklearn.calibration import calibration_curve
 import logging
 from pprint import pprint
 from matplotlib import pyplot as plt
 import os
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.calibration import calibration_curve
 
 logging.basicConfig(
     format='%(asctime)s || %(levelname)s || %(module)s - %(funcName)s, line #%(lineno)d || %(message)s',
     level=logging.INFO,
     datefmt='%y/%b/%Y %H:%M:%S')
 
+# TODO: module
 class DataReader():
     """
     Read and manipulate training data
@@ -28,11 +30,12 @@ class DataReader():
             self.data = pd.read_csv(self.path)
         else:
             raise ValueError("Invalid file format")
-        logging.info(f"Read in data from {self.path} {self.data.shape}")
+        logging.info(f"Read in data from {self.path}, size = {self.data.shape}")
 
     def sample(self, size):
+        logging.info(f"Sampling data using sample size = {size}")
         self.data = self.data.sample(frac = size)
-        logging.info(f"Data shape: {self.data.shape}")
+        logging.info(f"Sampled data size: {self.data.shape}")
 
     def define_y(self, dep_var):
         """
@@ -52,31 +55,6 @@ class DataReader():
         logging.info(f"Train data size: {x_train.shape}")
         logging.info(f"Test data size: {x_test.shape}")
         return x_train, x_test, y_train, y_test
- 
-
-def get_models():
-    """
-    Explicitly define models using different max_samples
-    """
-    models = dict()
-    for i in np.arange(0.1, 1.1, 0.1):
-        key = '%.1f' % i
-        # set max_samples=None to use 100%
-        if i == 1.0:
-            i = None
-        models[key] = RandomForestClassifier(max_samples=i)
-    return models
- 
-
-# with more time (and more compute power), I would do random search over a grid of parameters
-# TODO: try CV on number of trees, bootstrap sample, # feature = sqrt of total # features
-def evaluate_model(model, X, y):
-    """
-    Run cross-validation on model and return scores
-    """
-    cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-    scores = cross_val_score(model, X, y, scoring='accuracy', cv=cv, n_jobs=-1)
-    return scores
 
 
 data_reader = DataReader('data/processed.pkl')
@@ -86,26 +64,22 @@ data_reader.sample(size = sample_size)
 data_reader.define_y('IsBadBuy')
 x_train, x_test, y_train, y_test = data_reader.split_train_test()
 
-# TODO:
-# models = get_models()
-# results, names = list(), list()
-# for name, model in models.items():
-# 	logging.info(f"Evaluating model {name}")
-# 	scores = evaluate_model(model, x_train, y_train)
-# 	results.append(scores)
-# 	names.append(name)
-# 	logging.info('Accuracy: %.3f (%.3f)' % (scores.mean(), scores.std()))
+base_rf = RandomForestClassifier(random_state = 44133)
+max_features_opt = [x/10.0 for x in range(1, 10, 2)]
+max_features_opt.extend(['auto','log2'])
+param_grid = { 
+    'n_estimators': [int(x) for x in np.linspace(start = 100, stop = 1000, num = 10)],
+    'max_features': max_features_opt,
+    # 'criterion' :['gini', 'entropy'],
+    # 'bootstrap': [True, False],
+    # 'class_weight': [{0:1,1:2}, {0:0, 1:0}]
+}
+logging.info("Starting cross validation")
+CV_rfc = RandomizedSearchCV(estimator=base_rf, param_distributions=param_grid, cv= 5)
+CV_rfc.fit(x_train, y_train)
+logging.info(f"Best parameters: {CV_rfc.best_params_}")
 
-# plt.boxplot(results, labels=names, showmeans=True)
-# plt.show()
-# plt.savefig('output/cv_results.png')
-
-# model_mean = [scores.mean() for scores in results]
-# optimal_max_samples = float(names[model_mean.index(max(model_mean))])
-optimal_max_samples = 0.1
-
-final_model = RandomForestClassifier(max_samples=optimal_max_samples)
-# TODO: cv here?
+final_model = CV_rfc.best_estimator_
 final_model.fit(x_train, y_train)
 pred_class_probs = final_model.predict_proba(x_test)
 true_index = list(final_model.classes_).index(1)
