@@ -27,11 +27,12 @@ class DataReader():
 
     def define_y(self, dep_var):
         """
-        Store dependent variable. Split into X and Y data.
+        Store dependent binary variable. Split into X and Y data.
         """
         self.dep_var = dep_var
         self.y = self.data[self.dep_var]
         self.x = self.data.drop([self.dep_var], axis = 1)
+        logging.info(f"Prevalence: {100*round((self.y.value_counts()[1]/self.y.shape)[0],2)}%")
 
     # assuming observations are unrelated, otherwise there would be leakage between train/test
     # TODO: split by BYRNO
