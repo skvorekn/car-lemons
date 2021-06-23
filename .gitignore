@@ -1,5 +1,5 @@
-data/
-output/
+data/*
+output/*
 *.html
 
 .DS_Store
