@@ -1,10 +1,5 @@
-import pandas as pd
 import numpy as np
-import datetime
 import logging
-from pprint import pprint
-from matplotlib import pyplot as plt
-import os
 import argparse
 
 from sklearn.ensemble import RandomForestClassifier
