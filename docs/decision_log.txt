@@ -15,3 +15,4 @@ With more time, I would:
 - could do grid search after random search is narrowed down, but probably more benefit would come from feature engineering
 - feature engineering
 - because feature importance tends to inflate importance of high cardinality categorical variables and continuous, would try permutation importance with more computational power This shows how does random reshuffling of the data affect model performance?
+- unit testing
