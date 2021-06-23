@@ -1,5 +1,7 @@
 # car_lemons
 
+Predict if car purchased at an auction is a kick to provide best inventory selection to their customers
+
 # Development
 
 * pipenv
@@ -12,3 +14,5 @@ kaggle competitions download -c DontGetKicked
 ```
 
 or download manually.
+
+# Models
