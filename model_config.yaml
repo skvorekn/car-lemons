@@ -1,0 +1,9 @@
+random_state: 44133
+estimators:
+  min: 100
+  max: 1000
+  num: 5
+max_features:
+  min: 1
+  interval: 4
+cv: 5
