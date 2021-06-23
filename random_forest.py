@@ -23,14 +23,14 @@ def cross_validate(conf, x_train, y_train):
                                             10,
                                             conf['max_features']['interval'])]
     max_features_opt.extend(['auto','log2'])
+
+    # many others to tune, but limiting for sake of compute power
     param_grid = { 
         'n_estimators': [int(x) for x in np.linspace(start = conf['estimators']['min'],
                                                     stop = conf['estimators']['max'],
                                                     num = conf['estimators']['num'])],
-        # 12 min, 0.867 using n_estimators, criterion, and class_weight
-        'max_features': max_features_opt, # 7 min, .887
-        # 'criterion' :['gini', 'entropy'],
-        'class_weight': [{0:1,1:2}, {0:1, 1:1}]
+        'max_features': max_features_opt, 
+        'class_weight': [{0:1,1:2}, {0:1, 1:1}, {0:1, 1:1.5}]
     }
     logging.info("Starting cross validation")
     CV_rfc = RandomizedSearchCV(estimator=base_rf, param_distributions=param_grid,
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     #      sample_size = args.sample_size,
     #      y = args.y)
 
-    main('model_config.yaml', 0.1, 'IsBadBuy')
+    main('model_config.yaml', 0.01, 'IsBadBuy')
