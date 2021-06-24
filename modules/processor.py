@@ -5,7 +5,7 @@ import logging
 from sklearn.model_selection import train_test_split
 from pandas_streaming.df import train_test_apart_stratify
 
-from modules.utilities import split_x_y
+from modules.utilities import split_x_y, log_prevalence
 
 class DataReader():
     """
@@ -36,7 +36,7 @@ class DataReader():
         Store dependent binary variable.
         """
         self.dep_var = dep_var
-        logging.info(f"Prevalence: {100*round((self.data[self.dep_var].value_counts()[1]/self.data.shape)[0],2)}%")
+        log_prevalence(self.data[self.dep_var])
 
     def split_train_test(self, group=None, test_size=0.2):
         """Train test splilt stratified by dependent variable to handle class imbalance and, optionally, related observations.
@@ -68,5 +68,7 @@ class DataReader():
         self.x_test, self.y_test = split_x_y(test, self.dep_var)
 
         logging.info(f"Train data size: {self.x_train.shape}")
+        log_prevalence(self.y_train)
         logging.info(f"Test data size: {self.x_test.shape}")
+        log_prevalence(self.y_test)
         return self.x_train, self.x_test, self.y_train, self.y_test
