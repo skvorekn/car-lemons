@@ -50,10 +50,10 @@ def cross_validate(conf, x_train, y_train):
     return best_model
 
 
-def main(config_path, sample_size, y, group=None):
+def main(config_path, data_path, sample_size, y, group=None):
 
     conf = read_config(config_path)
-    data_reader = DataReader('data/processed.pkl')
+    data_reader = DataReader(data_path)
 
     data_reader.sample(size = sample_size)
     data_reader.define_y(y)
@@ -62,6 +62,7 @@ def main(config_path, sample_size, y, group=None):
     final_model = cross_validate(conf, x_train, y_train)
     final_model.fit(x_train, y_train)
 
+    # TODO: clean these up
     eval = Evaluator(final_model, x_test, y_test)
     eval.get_accuracy()
     eval.create_plots()
@@ -91,4 +92,4 @@ if __name__ == "__main__":
     #      sample_size = args.sample_size,
     #      y = args.y)
 
-    main('model_config.yaml', 0.01, 'IsBadBuy', 'BYRNO')
+    main('model_config.yaml','data/processed.pkl', 0.01, 'IsBadBuy', 'BYRNO')
