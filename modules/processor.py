@@ -15,6 +15,9 @@ class DataReader():
     __readers__ = {'.pkl': pd.read_pickle,
                    '.csv': pd.read_csv}
 
+    __split_methods__ = {True: train_test_apart_stratify,
+                         False: train_test_split}
+
     def __init__(self, path):
         self.path = path
         _, self.format = os.path.splitext(self.path)
@@ -50,19 +53,15 @@ class DataReader():
         """
         self.test_size = test_size
 
-        group_bool = group is not None
-        split_type = {True: train_test_apart_stratify,
-                      False: train_test_split}
-
         kwargs = {'test_size': self.test_size,
                   'random_state': 44133}
-        if group_bool:
+        if group_bool := (group is not None):
             kwargs['group'] = group
             kwargs['stratify'] = self.dep_var
         else:
             kwargs['stratify'] = self.y
 
-        train, test = split_type[group_bool](self.data, **kwargs)
+        train, test = self.__split_methods__[group_bool](self.data, **kwargs)
 
         self.x_train, self.y_train = split_x_y(train, self.dep_var)
         self.x_test, self.y_test = split_x_y(test, self.dep_var)
