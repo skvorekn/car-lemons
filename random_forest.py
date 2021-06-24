@@ -15,10 +15,7 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt='%y/%b/%Y %H:%M:%S')
 
-
-def cross_validate(conf, x_train, y_train):
-    base_rf = RandomForestClassifier(random_state = conf['random_state'])
-
+def generate_param_grid(conf):
     max_features_opt = [x/10.0 for x in range(conf['max_features']['min'],
                                             10,
                                             conf['max_features']['interval'])]
@@ -32,6 +29,15 @@ def cross_validate(conf, x_train, y_train):
         'max_features': max_features_opt, 
         'class_weight': [{0:1,1:2}, {0:1, 1:1}, {0:1, 1:1.5}]
     }
+
+    return param_grid
+
+
+def cross_validate(conf, x_train, y_train):
+    base_rf = RandomForestClassifier(random_state = conf['random_state'])
+
+    param_grid = generate_param_grid(conf)
+
     logging.info("Starting cross validation")
     # TODO: also need to handle groups (BYRNO) in cross validation
     CV_rfc = RandomizedSearchCV(estimator=base_rf, param_distributions=param_grid,
