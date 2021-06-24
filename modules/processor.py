@@ -36,9 +36,7 @@ class DataReader():
         Store dependent binary variable. Split into X and Y data.
         """
         self.dep_var = dep_var
-        self.y = self.data[self.dep_var]
-        self.x = self.data.drop([self.dep_var], axis = 1)
-        logging.info(f"Prevalence: {100*round((self.y.value_counts()[1]/self.y.shape)[0],2)}%")
+        logging.info(f"Prevalence: {100*round((self.data[self.dep_var].value_counts()[1]/self.data.shape)[0],2)}%")
 
     def split_train_test(self, group=None, test_size=0.2):
         """Train test splilt stratified by dependent variable to handle class imbalance and, optionally, related observations.
