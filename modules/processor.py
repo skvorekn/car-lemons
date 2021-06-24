@@ -33,7 +33,7 @@ class DataReader():
 
     def define_y(self, dep_var):
         """
-        Store dependent binary variable. Split into X and Y data.
+        Store dependent binary variable.
         """
         self.dep_var = dep_var
         logging.info(f"Prevalence: {100*round((self.data[self.dep_var].value_counts()[1]/self.data.shape)[0],2)}%")
