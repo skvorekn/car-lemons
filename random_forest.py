@@ -33,6 +33,7 @@ def cross_validate(conf, x_train, y_train):
         'class_weight': [{0:1,1:2}, {0:1, 1:1}, {0:1, 1:1.5}]
     }
     logging.info("Starting cross validation")
+    # TODO: also need to handle groups (BYRNO) in cross validation
     CV_rfc = RandomizedSearchCV(estimator=base_rf, param_distributions=param_grid,
                                 cv=conf['cv'])
     CV_rfc.fit(x_train, y_train)
@@ -43,14 +44,14 @@ def cross_validate(conf, x_train, y_train):
     return best_model
 
 
-def main(config_path, sample_size, y):
+def main(config_path, sample_size, y, group=None):
 
     conf = read_config(config_path)
     data_reader = DataReader('data/processed.pkl')
 
     data_reader.sample(size = sample_size)
     data_reader.define_y(y)
-    x_train, x_test, y_train, y_test = data_reader.split_train_test()
+    x_train, x_test, y_train, y_test = data_reader.split_train_test(group=group)
 
     final_model = cross_validate(conf, x_train, y_train)
     final_model.fit(x_train, y_train)
@@ -84,4 +85,4 @@ if __name__ == "__main__":
     #      sample_size = args.sample_size,
     #      y = args.y)
 
-    main('model_config.yaml', 0.01, 'IsBadBuy')
+    main('model_config.yaml', 0.01, 'IsBadBuy', 'BYRNO')

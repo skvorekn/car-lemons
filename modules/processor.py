@@ -3,6 +3,9 @@ import pandas as pd
 import logging
 
 from sklearn.model_selection import train_test_split
+from pandas_streaming.df import train_test_apart_stratify
+
+from modules.utilities import split_x_y
 
 class DataReader():
     """
@@ -12,6 +15,7 @@ class DataReader():
         self.path = path
         self.format = os.path.splitext(self.path)[1]
 
+        # TODO: dict: operator
         if self.format == '.pkl':
             self.data = pd.read_pickle(self.path)
         elif self.format == '.csv':
@@ -34,13 +38,35 @@ class DataReader():
         self.x = self.data.drop([self.dep_var], axis = 1)
         logging.info(f"Prevalence: {100*round((self.y.value_counts()[1]/self.y.shape)[0],2)}%")
 
-    # assuming observations are unrelated, otherwise there would be leakage between train/test
-    # TODO: split by BYRNO
-    def split_train_test(self, test_size=0.2):
+    def split_train_test(self, group=None, test_size=0.2):
+        """Train test splilt stratified by dependent variable to handle class imbalance and, optionally, related observations.
+
+        Args:
+            group (str, optional): Name of group ID variable to which observations overlap. Defaults to None.
+            test_size (float, optional): Fraction of data to use for testing. Defaults to 0.2.
+
+        Returns:
+            DataFrames:
+        """
         self.test_size = test_size
-        x_train, x_test, y_train, y_test = train_test_split(self.x, self.y, 
-                                                            test_size = self.test_size,
-                                                            random_state = 44133)
-        logging.info(f"Train data size: {x_train.shape}")
-        logging.info(f"Test data size: {x_test.shape}")
-        return x_train, x_test, y_train, y_test
+
+        group_bool = group is not None
+        split_type = {True: train_test_apart_stratify,
+                      False: train_test_split}
+
+        kwargs = {'test_size': self.test_size,
+                  'random_state': 44133}
+        if group_bool:
+            kwargs['group'] = group
+            kwargs['stratify'] = self.dep_var
+        else:
+            kwargs['stratify'] = self.y
+
+        train, test = split_type[group_bool](self.data, **kwargs)
+
+        self.x_train, self.y_train = split_x_y(train, self.dep_var)
+        self.x_test, self.y_test = split_x_y(test, self.dep_var)
+
+        logging.info(f"Train data size: {self.x_train.shape}")
+        logging.info(f"Test data size: {self.x_test.shape}")
+        return self.x_train, self.x_test, self.y_train, self.y_test
