@@ -11,17 +11,19 @@ class DataReader():
     """
     Read and manipulate training data
     """
+
+    __readers__ = {'.pkl': pd.read_pickle,
+                   '.csv': pd.read_csv}
+
     def __init__(self, path):
         self.path = path
-        self.format = os.path.splitext(self.path)[1]
+        _, self.format = os.path.splitext(self.path)
 
-        # TODO: dict: operator
-        if self.format == '.pkl':
-            self.data = pd.read_pickle(self.path)
-        elif self.format == '.csv':
-            self.data = pd.read_csv(self.path)
-        else:
-            raise ValueError("Invalid file format")
+        try:
+            self.data = self.__readers__[self.format](self.path)
+        except ValueError:
+            raise ValueError(f"Invalid input file format '{self.format}'")
+
         logging.info(f"Read in data from {self.path}, size = {self.data.shape}")
 
     def sample(self, size):
