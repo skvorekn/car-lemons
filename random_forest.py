@@ -53,6 +53,7 @@ def cross_validate(conf, x_train, y_train):
 def main(config_path, data_path, sample_size, y, group=None):
 
     conf = read_config(config_path)
+    # TODO: remove BYRNO from data
     data_reader = DataReader(data_path)
 
     data_reader.sample(size = sample_size)
