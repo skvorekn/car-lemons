@@ -56,7 +56,12 @@ def main(config_path, data_path, sample_size, y, group=None):
     # TODO: remove BYRNO from data
     data_reader = DataReader(data_path)
 
+    data_reader.drop_sparse_vars()
+    data_reader.format_vars()
+    data_reader.one_hot()
+    data_reader.impute_nulls()
     data_reader.sample(size = sample_size)
+    data_reader.create_profile_report()
     data_reader.define_y(y)
     x_train, x_test, y_train, y_test = data_reader.split_train_test(group=group)
 
@@ -93,4 +98,4 @@ if __name__ == "__main__":
     #      sample_size = args.sample_size,
     #      y = args.y)
 
-    main('model_config.yaml','data/processed.pkl', 0.01, 'IsBadBuy', 'BYRNO')
+    main('model_config.yaml','data/training.csv', 0.01, 'IsBadBuy', 'BYRNO')

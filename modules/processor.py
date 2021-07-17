@@ -1,6 +1,8 @@
 import os
 import pandas as pd
+import numpy as np
 import logging
+import datetime as dt
 
 from sklearn.model_selection import train_test_split
 from pandas_streaming.df import train_test_apart_stratify
@@ -29,10 +31,40 @@ class DataReader():
 
         logging.info(f"Read in data from {self.path}, size = {self.data.shape}")
 
+    def drop_sparse_vars(self, threshold=0.5):
+        missing_flag = self.data.isna().sum() > self.data.shape[0]*threshold
+        drop_cols = list(missing_flag.index[missing_flag])
+        drop_cols.extend(['RefId','WheelTypeID'])
+        self.data = self.data.drop(drop_cols, axis = 1)
+        logging.info(f"Dropped columns: {drop_cols}")
+
+    def format_vars(self):
+        self.data['PurchDate'] = self.data['PurchDate'].apply(lambda x: dt.datetime.strptime(x, '%m/%d/%Y').toordinal)
+
+    def one_hot(self):
+        self.data = pd.get_dummies(self.data).reset_index()
+        mmrcols = self.data.filter(regex='MMR').columns.values
+        self.data[mmrcols] = self.data[mmrcols].apply(lambda x: np.array(x, dtype='float64'))
+        logging.info(f"Onehotted dataset shape: {self.data.shape}")
+
+    # TODO - i.e. date parsing
+    def create_derived_vars(self):
+        pass
+
+    # TODO: other methods to impute nulls
+    def impute_nulls(self):
+        self.data = self.data.fillna(self.data.median()).drop(['index'], axis = 1)
+        logging.info("Nulls imputed with median.")
+
+    # TODO: sample based on BYRNO?
     def sample(self, size):
         logging.info(f"Sampling data using sample size = {size}")
         self.data = self.data.sample(frac = size)
         logging.info(f"Sampled data size: {self.data.shape}")
+
+    def create_profile_report(self):
+        profile = self.data.profile_report(title="Modeling Data Report")
+        profile.to_file('notebooks/Modeling Data Report.html')
 
     def define_y(self, dep_var):
         """
