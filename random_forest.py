@@ -22,7 +22,6 @@ class RandomForest(BaseModel):
         self.conf = conf
 
     def process_data(self, path, y, id_group, sample_size=1):
-        # TODO: remove BYRNO from data
         data_reader = DataReader(path)
         data_reader.drop_sparse_vars()
         data_reader.drop_ids()

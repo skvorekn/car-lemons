@@ -98,6 +98,9 @@ class DataReader():
             kwargs['stratify'] = self.y
 
         train, test = self.__split_methods__[group_bool](self.data, **kwargs)
+        if group_bool:
+            train = train.drop([group], axis = 1)
+            test = test.drop([group], axis = 1)
 
         self.x_train, self.y_train = split_x_y(train, self.dep_var)
         self.x_test, self.y_test = split_x_y(test, self.dep_var)
