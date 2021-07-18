@@ -8,64 +8,74 @@ from sklearn.model_selection import RandomizedSearchCV
 from modules.config_helper import read_config
 from modules.evaluator import Evaluator
 from modules.processor import DataReader
+from modules.base_model import BaseModel
 
 
 logging.basicConfig(
     format='%(asctime)s || %(levelname)s || %(module)s - %(funcName)s, line #%(lineno)d || %(message)s',
     level=logging.INFO,
-    datefmt='%y/%b/%Y %H:%M:%S')
+    datefmt='%y/%b/%Y %H:%M:%S',
+    filename='logs/test.log')
 
-def generate_param_grid(conf):
-    max_features_opt = [x/10.0 for x in range(conf['max_features']['min'],
-                                            10,
-                                            conf['max_features']['interval'])]
-    max_features_opt.extend(['auto','log2'])
+class RandomForest(BaseModel):
+    def __init__(self, conf):
+        self.conf = conf
 
-    # many others to tune, but limiting for sake of compute power
-    param_grid = { 
-        'n_estimators': [int(x) for x in np.linspace(start = conf['estimators']['min'],
-                                                    stop = conf['estimators']['max'],
-                                                    num = conf['estimators']['num'])],
-        'max_features': max_features_opt, 
-        'class_weight': [{0:1,1:2}, {0:1, 1:1}, {0:1, 1:1.5}]
-    }
+    def process_data(self, path, y, id_group, sample_size=1):
+        # TODO: remove BYRNO from data
+        data_reader = DataReader(path)
+        data_reader.drop_sparse_vars()
+        data_reader.drop_ids()
+        data_reader.format_vars()
+        data_reader.one_hot()
+        data_reader.impute_nulls()
+        data_reader.sample(size = sample_size)
+        data_reader.create_profile_report()
+        data_reader.define_y(y)
+        self.x_train, self.x_test, self.y_train, self.y_test = data_reader.split_train_test(group=id_group)
+        return self.x_train, self.x_test, self.y_train, self.y_test
 
-    return param_grid
+    def generate_param_grid(self):
+        max_features_opt = [x/10.0 for x in range(self.conf['max_features']['min'],
+                                                10,
+                                                self.conf['max_features']['interval'])]
+        max_features_opt.extend(['auto','log2'])
 
+        # many others to tune, but limiting for sake of compute power
+        self.param_grid = { 
+            'n_estimators': [int(x) for x in np.linspace(start = self.conf['estimators']['min'],
+                                                        stop = self.conf['estimators']['max'],
+                                                        num = self.conf['estimators']['num'])],
+            'max_features': max_features_opt, 
+            'class_weight': [{0:1,1:2}, {0:1, 1:1}, {0:1, 1:1.5}]
+        }
 
-def cross_validate(conf, x_train, y_train):
-    base_rf = RandomForestClassifier(random_state = conf['random_state'])
+        return self.param_grid
 
-    param_grid = generate_param_grid(conf)
+    def cross_validate(self):
+        base_rf = RandomForestClassifier(random_state = self.conf['random_state'])
 
-    logging.info("Starting cross validation")
-    # TODO: also need to handle groups (BYRNO) in cross validation
-    CV_rfc = RandomizedSearchCV(estimator=base_rf, param_distributions=param_grid,
-                                cv=conf['cv'])
-    CV_rfc.fit(x_train, y_train)
-    logging.info(f"Best parameters: {CV_rfc.best_params_}")
+        self.generate_param_grid()
 
-    best_model = CV_rfc.best_estimator_
+        logging.info("Starting cross validation")
+        # TODO: also need to handle groups (BYRNO) in cross validation
+        CV_rfc = RandomizedSearchCV(estimator=base_rf, param_distributions=self.param_grid,
+                                    cv=self.conf['cv'])
+        CV_rfc.fit(self.x_train, self.y_train)
+        logging.info(f"Best parameters: {CV_rfc.best_params_}")
 
-    return best_model
+        self.best_model = CV_rfc.best_estimator_
+
+        return self.best_model
 
 
 def main(config_path, data_path, sample_size, y, group=None):
 
     conf = read_config(config_path)
-    # TODO: remove BYRNO from data
-    data_reader = DataReader(data_path)
 
-    data_reader.drop_sparse_vars()
-    data_reader.format_vars()
-    data_reader.one_hot()
-    data_reader.impute_nulls()
-    data_reader.sample(size = sample_size)
-    data_reader.create_profile_report()
-    data_reader.define_y(y)
-    x_train, x_test, y_train, y_test = data_reader.split_train_test(group=group)
-
-    final_model = cross_validate(conf, x_train, y_train)
+    rf = RandomForest(conf)
+    x_train, x_test, y_train, y_test = rf.process_data(data_path, y, group, sample_size)
+    final_model = rf.cross_validate()
     final_model.fit(x_train, y_train)
 
     # TODO: clean these up
@@ -77,12 +87,12 @@ def main(config_path, data_path, sample_size, y, group=None):
     # TODO: roc, sensitivity at low alert rates
     # TODO: evaluate accuracy by unbalanced classes
     # TODO: upsample true class? something else?
-    # TODO: formatting
+    # TODO: formatting in CI
+    # TODO: tests
 
 
 if __name__ == "__main__":
     # TODO: validate arguments
-    # TODO: set largest sample possible time-wise for final model
     # args = argparse.ArgumentParser()
     # args.add_argument('config_path',
     #                 default = 'model_config.yaml',
