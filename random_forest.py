@@ -92,19 +92,21 @@ def main(config_path, data_path, sample_size, y, group=None):
 
 if __name__ == "__main__":
     # TODO: validate arguments
-    # args = argparse.ArgumentParser()
-    # args.add_argument('config_path',
-    #                 default = 'model_config.yaml',
-    #                 type = str)
-    # args.add_argument('sample_size',
-    #                 default = 0.1, 
-    #                 type = float)
-    # args.add_argument('y',
-    #                 default = 'IsBadBuy',
-    #                 type = str)
+    args = argparse.ArgumentParser()
+    args.add_argument('config_path',
+                    default = 'model_config.yaml',
+                    type = str)
+    args.add_argument('input_path',
+                    default = 'data/training.csv',
+                    type = str)
+    args.add_argument('sample_size',
+                    default = 0.1, 
+                    type = float)
+    args.add_argument('y',
+                    default = 'IsBadBuy',
+                    type = str)
+    args.add_argument('id_group',
+                    default = 'BYRNO',
+                    type = str)
 
-    # main(config_path = args.config_path,
-    #      sample_size = args.sample_size,
-    #      y = args.y)
-
-    main('model_config.yaml','data/training.csv', 0.01, 'IsBadBuy', 'BYRNO')
+    main(args.config_path, args.input_path, args.sample_size, args.y, args.id_group)
