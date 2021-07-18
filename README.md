@@ -4,20 +4,6 @@ Case study comparing prediction methods with re-usable template code
 
 Example research question: predict if car purchased at an auction is a kick to provide best inventory selection to their customers from [Kaggle](https://www.kaggle.com/c/DontGetKicked)
 
-# Development
-
-* pipenv
-* pytest
-
-# Data
-
-In the data/ folder, run:
-```
-kaggle competitions download -c DontGetKicked
-```
-
-or download manually.
-
 # Models
 
 * Random Forest tuned using random search
@@ -26,3 +12,26 @@ or download manually.
 * Kernel SVM
 * Light Gradient Boosted Machine
 * Lasso
+
+# Development
+
+## Data
+
+In the data/ folder, run:
+```
+kaggle competitions download -c DontGetKicked
+```
+
+or download manually.
+
+## Environment
+
+* pipenv
+
+## Testing
+
+* pytest
+
+# Contributing
+
+CI: formatting, pytests pass & coverage, HISTORY updated
