@@ -49,6 +49,11 @@ class Evaluator():
         # self.sensitivity()
 
     def get_feat_imp(self, top_n = 5, outpath = 'output/feature_importance.csv'):
+        # TODO: - because feature importance tends to inflate importance of high cardinality 
+        # categorical variables and continuous, would try permutation importance with more 
+        # computational power This shows how does random reshuffling of the data affect 
+        # model performance?
+        
         feat_imp = pd.Series(self.model.feature_importances_, index=self.x_test.columns.values)
         self.feat_imp = feat_imp.sort_values(ascending=False)
         logging.info(f"Top {top_n} features:")

@@ -34,9 +34,12 @@ class DataReader():
     def drop_sparse_vars(self, threshold=0.5):
         missing_flag = self.data.isna().sum() > self.data.shape[0]*threshold
         drop_cols = list(missing_flag.index[missing_flag])
-        drop_cols.extend(['RefId','WheelTypeID'])
         self.data = self.data.drop(drop_cols, axis = 1)
-        logging.info(f"Dropped columns: {drop_cols}")
+        logging.info(f"Due to > {threshold} proportion missingness, dropped columns: {drop_cols}")
+
+    def drop_ids(self, id_vars = ['RefId','WheelTypeID']):
+        self.data.drop(id_vars, axis = 1)
+        logging.info(f"Dropped ID variables: {id_vars}")
 
     def format_vars(self):
         self.data['PurchDate'] = self.data['PurchDate'].apply(lambda x: dt.datetime.strptime(x, '%m/%d/%Y').toordinal)
@@ -54,7 +57,7 @@ class DataReader():
     # TODO: other methods to impute nulls
     def impute_nulls(self):
         self.data = self.data.fillna(self.data.median()).drop(['index'], axis = 1)
-        logging.info("Nulls imputed with median.")
+        logging.info("Nulls imputed with column median.")
 
     # TODO: sample based on BYRNO?
     def sample(self, size):
@@ -62,9 +65,10 @@ class DataReader():
         self.data = self.data.sample(frac = size)
         logging.info(f"Sampled data size: {self.data.shape}")
 
-    def create_profile_report(self):
+    def create_profile_report(self, outpath = 'notebooks/Modeling Data Report.html'):
         profile = self.data.profile_report(title="Modeling Data Report")
-        profile.to_file('notebooks/Modeling Data Report.html')
+        profile.to_file(outpath)
+        logging.info(f"Profile report written to {outpath}")
 
     def define_y(self, dep_var):
         """
