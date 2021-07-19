@@ -17,6 +17,8 @@ class Evaluator():
 
     def create_plots(self):
         self.plot_calibration()
+        # self.plot_roc()
+        # self.plot_sensitivity()
 
     def plot_calibration(self):
         fig = plt.figure(1, figsize=(10, 10))

@@ -72,8 +72,8 @@ def main(config_path, data_path, sample_size, y, group=None):
     x_train, x_test, y_train, y_test = rf.process_data(data_path, y, group, sample_size)
     final_model = rf.cross_validate()
     final_model.fit(x_train, y_train)
+    # TODO: save final model
 
-    # TODO: clean these up
     eval = Evaluator(final_model, x_test, y_test, os.path.join('output',__file__.split('/')[-1]))
     eval.get_accuracy()
     eval.create_plots()
