@@ -1,12 +1,11 @@
 import numpy as np
 import logging
-import argparse
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 
 from modules.config_helper import read_config
-from modules.utilities import setup_logging
+from modules.utilities import configure_script_args, setup_logging
 from modules.evaluator import Evaluator
 from modules.processor import DataReader
 from modules.base_model import BaseModel
@@ -87,27 +86,7 @@ def main(config_path, data_path, sample_size, y, group=None):
 
 
 if __name__ == "__main__":
-    # TODO: validate arguments
-    args = argparse.ArgumentParser()
-    args.add_argument('config_path',
-                    desc = 'Location of config file containing model parameters',
-                    default = 'model_config.yaml',
-                    type = str)
-    args.add_argument('input_path',
-                    desc = 'Location of raw training data',
-                    default = 'data/training.csv',
-                    type = str)
-    args.add_argument('sample_size',
-                    desc = 'Proportion of data to use',
-                    default = 0.1, 
-                    type = float)
-    args.add_argument('y',
-                    desc = 'Dependent variable name',
-                    default = 'IsBadBuy',
-                    type = str)
-    args.add_argument('id_group',
-                    desc = 'Column identifying related observations, to prevent leakage in model training',
-                    default = 'BYRNO',
-                    type = str)
+    args = configure_script_args()
 
-    main(args.config_path, args.input_path, args.sample_size, args.y, args.id_group)
+    # main(args.config_path, args.input_path, args.sample_size, args.y, args.id_group)
+    main('model_config.yaml','data/training.csv',0.1,'IsBadBuy','BYRNO')

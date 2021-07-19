@@ -1,6 +1,7 @@
 import logging
 import datetime as dt
 import os
+import argparse
 
 def setup_logging(filename):
     model, _ = os.path.splitext(filename)
@@ -16,6 +17,32 @@ def setup_logging(filename):
         level=logging.INFO,
         datefmt='%y/%b/%Y %H:%M:%S',
         filename=f'{log_folder}/{model}_{start_time.strftime("%H:%M:%S")}.log')
+
+def configure_script_args():
+    # TODO: validate arguments
+    args = argparse.ArgumentParser()
+    args.add_argument('config_path',
+                    help = 'Location of config file containing model parameters',
+                    default = 'model_config.yaml',
+                    type = str)
+    args.add_argument('input_path',
+                    help = 'Location of raw training data',
+                    default = 'data/training.csv',
+                    type = str)
+    args.add_argument('sample_size',
+                    help = 'Proportion of data to use',
+                    default = 0.1, 
+                    type = float)
+    args.add_argument('y',
+                    help = 'Dependent variable name',
+                    default = 'IsBadBuy',
+                    type = str)
+    args.add_argument('id_group',
+                    help = 'Column identifying related observations, to prevent leakage in model training',
+                    default = 'BYRNO',
+                    type = str)
+    # args.parse_args()
+    return args
 
 def split_x_y(data, dep_var):
     y = data[dep_var]
