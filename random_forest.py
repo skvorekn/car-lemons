@@ -1,6 +1,8 @@
 import numpy as np
 import logging
 import argparse
+import datetime as dt
+import os
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
@@ -11,11 +13,17 @@ from modules.processor import DataReader
 from modules.base_model import BaseModel
 
 
+start_time = dt.datetime.now()
+date = start_time.strftime("%Y-%b-%y")
+log_folder = f"logs/{date}"
+if not os.path.exists(log_folder):
+    os.mkdir(log_folder)
+
 logging.basicConfig(
     format='%(asctime)s || %(levelname)s || %(module)s - %(funcName)s, line #%(lineno)d || %(message)s',
     level=logging.INFO,
     datefmt='%y/%b/%Y %H:%M:%S',
-    filename='logs/test.log')
+    filename=f'{log_folder}/RF_{start_time.strftime("%H:%M:%S")}.log')
 
 class RandomForest(BaseModel):
     def __init__(self, conf):
