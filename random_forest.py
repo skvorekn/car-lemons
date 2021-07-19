@@ -90,18 +90,23 @@ if __name__ == "__main__":
     # TODO: validate arguments
     args = argparse.ArgumentParser()
     args.add_argument('config_path',
+                    desc = 'Location of config file containing model parameters',
                     default = 'model_config.yaml',
                     type = str)
     args.add_argument('input_path',
+                    desc = 'Location of raw training data',
                     default = 'data/training.csv',
                     type = str)
     args.add_argument('sample_size',
+                    desc = 'Proportion of data to use',
                     default = 0.1, 
                     type = float)
     args.add_argument('y',
+                    desc = 'Dependent variable name',
                     default = 'IsBadBuy',
                     type = str)
     args.add_argument('id_group',
+                    desc = 'Column identifying related observations, to prevent leakage in model training',
                     default = 'BYRNO',
                     type = str)
 
