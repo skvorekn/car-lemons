@@ -47,7 +47,7 @@ class Evaluator():
 
     def get_accuracy(self):
         logging.info(f"Test set score: {self.model.score(self.x_test, self.y_test)}")
-        # TODO:
+        # TODO: true/false accuracy:
         logging.info(f"Test set score for true target class:")
         logging.info(f"Test set score for false target class:")
         # self.sensitivity()

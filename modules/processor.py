@@ -5,7 +5,7 @@ import logging
 import datetime as dt
 
 from sklearn.model_selection import train_test_split
-from pandas_streaming.df import train_test_apart_stratify
+# TODO: from pandas_streaming.df import train_test_apart_stratify
 
 from modules.utilities import split_x_y, log_prevalence
 

@@ -41,7 +41,7 @@ def configure_script_args():
                     help = 'Column identifying related observations, to prevent leakage in model training',
                     default = 'BYRNO',
                     type = str)
-    # args.parse_args()
+    # TODO: args.parse_args()
     return args
 
 def split_x_y(data, dep_var):
