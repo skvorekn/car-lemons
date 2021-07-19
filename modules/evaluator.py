@@ -4,7 +4,7 @@ import logging
 from sklearn.calibration import calibration_curve
 
 class Evaluator():
-    def __init__(self, final_model, x_test, y_test):
+    def __init__(self, final_model, x_test, y_test, outpath_prefix='output/test_'):
         self.y_test = y_test
         self.x_test = x_test
         self.model = final_model
@@ -13,10 +13,12 @@ class Evaluator():
         true_index = list(self.model.classes_).index(1)
         self.true_preds = [pred[true_index] for pred in pred_class_probs]
 
+        self.outpath_prefix = outpath_prefix
+
     def create_plots(self):
         self.plot_calibration()
 
-    def plot_calibration(self, outpath = 'output/test_calibration.png'):
+    def plot_calibration(self):
         fig = plt.figure(1, figsize=(10, 10))
         ax1 = plt.subplot2grid((3, 1), (0, 0), rowspan=2)
         ax2 = plt.subplot2grid((3, 1), (2, 0))
@@ -32,7 +34,7 @@ class Evaluator():
         ax2.set_xlabel("Mean predicted value")
         ax2.set_ylabel("Count")
         ax2.legend(loc="upper center", ncol=2)
-        plt.savefig(outpath)
+        plt.savefig(self.outpath_prefix + "_calibration.png")
         # TODO: split by class
 
     # def plot_roc(self, outpath = 'output/test_roc.png'):
@@ -48,7 +50,7 @@ class Evaluator():
         logging.info(f"Test set score for false target class:")
         # self.sensitivity()
 
-    def get_feat_imp(self, top_n = 5, outpath = 'output/feature_importance.csv'):
+    def get_feat_imp(self, top_n = 5):
         # TODO: - because feature importance tends to inflate importance of high cardinality 
         # categorical variables and continuous, would try permutation importance with more 
         # computational power This shows how does random reshuffling of the data affect 
@@ -58,4 +60,4 @@ class Evaluator():
         self.feat_imp = feat_imp.sort_values(ascending=False)
         logging.info(f"Top {top_n} features:")
         logging.info(self.feat_imp.head(top_n))
-        self.feat_imp.to_csv(outpath)
+        self.feat_imp.to_csv(self.outpath_prefix + "_feature_importance.csv")

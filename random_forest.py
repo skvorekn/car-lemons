@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+import os
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
@@ -73,7 +74,7 @@ def main(config_path, data_path, sample_size, y, group=None):
     final_model.fit(x_train, y_train)
 
     # TODO: clean these up
-    eval = Evaluator(final_model, x_test, y_test)
+    eval = Evaluator(final_model, x_test, y_test, os.path.join('output',__file__.split('/')[-1]))
     eval.get_accuracy()
     eval.create_plots()
     eval.get_feat_imp()
