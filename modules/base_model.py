@@ -1,17 +1,17 @@
-from abc import ABCMeta, abstractclassmethod
+from abc import ABCMeta, abstractclassmethod, abstractmethod
 
 class BaseModel(ABCMeta):
-    def __init__(self):
-        pass
+    def __init__(self, conf):
+        self.conf = conf
 
-    @abstractclassmethod
-    def process_data(self, path):
+    @abstractmethod
+    def process_data(self):
         """
         Use methods from DataReader to process data for modeling
         """
         pass
 
-    @abstractclassmethod
+    @abstractmethod
     def generate_param_grid(self):
         """
         Returns:
@@ -19,7 +19,7 @@ class BaseModel(ABCMeta):
         """
         pass
 
-    @abstractclassmethod
+    @abstractmethod
     def cross_validate(self):
         """
         Returns:
