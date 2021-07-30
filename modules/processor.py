@@ -71,9 +71,12 @@ class DataReader():
         logging.info(f"Sampled data size: {self.data.shape}")
 
     def create_profile_report(self, outpath = 'notebooks/Modeling Data Report.html'):
-        profile = self.data.profile_report(title="Modeling Data Report")
-        profile.to_file(outpath)
-        logging.info(f"Profile report written to {outpath}")
+        if not os.path.exists(outpath):
+            profile = ProfileReport(self.data, title="Modeling Data Report")
+            profile.to_file(outpath)
+            logging.info(f"Profile report written to {outpath}")
+        else:
+            logging.info(f"Profile report already exists at {outpath}")
 
     def define_y(self, dep_var):
         """
