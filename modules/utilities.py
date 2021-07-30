@@ -21,28 +21,28 @@ def setup_logging(filename):
 
 def configure_script_args():
     # TODO: validate arguments
-    args = argparse.ArgumentParser()
-    args.add_argument('config_path',
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config-path',
                     help = 'Location of config file containing model parameters',
                     default = 'model_config.yaml',
                     type = str)
-    args.add_argument('input_path',
+    parser.add_argument('--input-path',
                     help = 'Location of raw training data',
                     default = 'data/training.csv',
                     type = str)
-    args.add_argument('sample_size',
+    parser.add_argument('--sample-size',
                     help = 'Proportion of data to use',
                     default = 0.1, 
                     type = float)
-    args.add_argument('y',
+    parser.add_argument('--y',
                     help = 'Dependent variable name',
                     default = 'IsBadBuy',
                     type = str)
-    args.add_argument('id_group',
+    parser.add_argument('--id-group',
                     help = 'Column identifying related observations, to prevent leakage in model training',
                     default = 'BYRNO',
                     type = str)
-    # TODO: args.parse_args()
+    args = parser.parse_args()
     return args
 
 def split_x_y(data, dep_var):

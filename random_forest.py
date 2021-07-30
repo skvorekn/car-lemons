@@ -89,5 +89,4 @@ def main(config_path, data_path, sample_size, y, group=None):
 if __name__ == "__main__":
     args = configure_script_args()
 
-    # main(args.config_path, args.input_path, args.sample_size, args.y, args.id_group)
-    main('model_config.yaml','data/training.csv',0.1,'IsBadBuy','BYRNO')
+    main(args.config_path, args.input_path, args.sample_size, args.y, args.id_group)
