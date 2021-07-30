@@ -4,8 +4,10 @@ import numpy as np
 import logging
 import datetime as dt
 
+from pandas_profiling import ProfileReport
+
 from sklearn.model_selection import train_test_split
-# TODO: from pandas_streaming.df import train_test_apart_stratify
+from pandas_streaming.df import train_test_apart_stratify
 
 from modules.utilities import split_x_y, log_prevalence
 
