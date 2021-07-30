@@ -1,6 +1,7 @@
 import numpy as np
 import logging
 import os
+import ntpath
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
@@ -64,7 +65,7 @@ class RandomForest(BaseModel):
 
 def main(config_path, data_path, sample_size, y, group=None):
 
-    setup_logging(__file__.split('/')[-1])
+    setup_logging(ntpath.basename(__file__))
     conf = read_config(config_path)
 
     rf = RandomForest(conf)

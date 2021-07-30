@@ -8,7 +8,7 @@ def setup_logging(filename):
 
     start_time = dt.datetime.now()
     date = start_time.strftime("%Y-%b-%y")
-    log_folder = f"logs/{date}"
+    log_folder = os.path.join("logs", date)
     if not os.path.exists(log_folder):
         os.mkdir(log_folder)
 
