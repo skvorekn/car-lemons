@@ -16,7 +16,8 @@ def setup_logging(filename):
         format='%(asctime)s || %(levelname)s || %(module)s - %(funcName)s, line #%(lineno)d || %(message)s',
         level=logging.INFO,
         datefmt='%y/%b/%Y %H:%M:%S',
-        filename=f'{log_folder}/{model}_{start_time.strftime("%H:%M:%S")}.log')
+        filename=f'{log_folder}/{model}_{start_time.strftime("%H_%M_%S")}.log',
+        filemode='w')
 
 def configure_script_args():
     # TODO: validate arguments
