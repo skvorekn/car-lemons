@@ -61,10 +61,13 @@ class DataReader():
         self.data = self.data.fillna(self.data.median()).drop(['index'], axis = 1)
         logging.info("Nulls imputed with column median.")
 
-    # TODO: sample based on BYRNO?
-    def sample(self, size):
+    def sample(self, size, group=None):
         logging.info(f"Sampling data using sample size = {size}")
-        self.data = self.data.sample(frac = size)
+        if group is not None:
+            selected_ids = self.data[group].drop_duplicates().sample(frac = size)
+            self.data = self.data.merge(selected_ids, how = 'inner', on = group)
+        else:
+            self.data = self.data.sample(frac = size)
         logging.info(f"Sampled data size: {self.data.shape}")
 
     def create_profile_report(self, outpath = 'notebooks/Modeling Data Report.html'):

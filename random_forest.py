@@ -22,7 +22,7 @@ class RandomForest(BaseModel):
         data_reader.format_vars()
         data_reader.one_hot()
         data_reader.impute_nulls()
-        data_reader.sample(size = sample_size)
+        data_reader.sample(size = sample_size, group = id_group)
         data_reader.create_profile_report()
         data_reader.define_y(y)
         self.x_train, self.x_test, self.y_train, self.y_test = data_reader.split_train_test(group=id_group)
