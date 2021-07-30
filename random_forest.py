@@ -11,8 +11,7 @@ from modules.evaluator import Evaluator
 from modules.processor import DataReader
 from modules.base_model import BaseModel
 
-# class RandomForest(BaseModel):
-class RandomForest():
+class RandomForest(BaseModel):
     def __init__(self, conf):
         self.conf = conf
 

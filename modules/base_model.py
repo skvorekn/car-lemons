@@ -1,6 +1,6 @@
-from abc import ABCMeta, abstractclassmethod, abstractmethod
+from abc import ABC, abstractmethod
 
-class BaseModel(ABCMeta):
+class BaseModel(ABC):
     def __init__(self, conf):
         self.conf = conf
 
