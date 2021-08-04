@@ -4,7 +4,8 @@ import os
 import ntpath
 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, GroupKFold
+import joblib
 
 from modules.config_helper import read_config
 from modules.utilities import configure_script_args, setup_logging
@@ -46,16 +47,32 @@ class RandomForest(BaseModel):
 
         return self.param_grid
 
-    def cross_validate(self):
+    def group_generator(self, flatted_group, gkf):
+        for train, _ in gkf.split(self.x_train, groups=flatted_group):
+            yield np.unique(flatted_group[train], return_counts=True)[1]
+
+    def cross_validate(self, group=None):
+        logging.info("Setting up cross validation")
         base_rf = RandomForestClassifier(random_state = self.conf['random_state'])
+
+        if group_bool := (group is not None):
+            group_train = self.x_train[group].values
+            cv = GroupKFold(n_splits=self.conf["cv"])
+            self.x_train = self.x_train.drop([group], axis = 1)
+            self.x_test = self.x_test.drop([group], axis = 1)
+        else:
+            cv = self.conf["cv"]
 
         self.generate_param_grid()
 
         logging.info("Starting cross validation")
-        # TODO: also need to handle groups (BYRNO) in cross validation
-        CV_rfc = RandomizedSearchCV(estimator=base_rf, param_distributions=self.param_grid,
-                                    cv=self.conf['cv'])
-        CV_rfc.fit(self.x_train, self.y_train)
+        CV_rfc = RandomizedSearchCV(estimator=base_rf, 
+                                    param_distributions=self.param_grid,
+                                    cv=cv)
+        if group_bool:
+            CV_rfc.fit(self.x_train, self.y_train, groups=group_train)
+        else:
+            CV_rfc.fit(self.x_train, self.y_train)
         logging.info(f"Best parameters: {CV_rfc.best_params_}")
 
         self.best_model = CV_rfc.best_estimator_
@@ -70,7 +87,7 @@ def main(config_path, data_path, sample_size, y, group=None):
 
     rf = RandomForest(conf)
     x_train, x_test, y_train, y_test = rf.process_data(data_path, y, group, sample_size)
-    final_model = rf.cross_validate()
+    final_model = rf.cross_validate(group)
     final_model.fit(x_train, y_train)
     # TODO: save final model
 
