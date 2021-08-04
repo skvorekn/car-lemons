@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipykernel = "*"
+jupyterlab = "*"
+kaggle = "*"
+
+[packages]
+pandas-profiling = {extras = ["notebook"],version = "*"}
+scikit-learn = "*"
+pandas-streaming = "*"
+tabulate = "*"
+
+[requires]
+python_version = "3.8"
