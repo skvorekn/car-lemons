@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import logging
 from sklearn.calibration import calibration_curve
+from sklearn.metrics import confusion_matrix
+from tabulate import tabulate
 
 class Evaluator():
     def __init__(self, final_model, x_test, y_test, outpath_prefix='output/test_'):
@@ -42,15 +44,25 @@ class Evaluator():
     # def plot_roc(self, outpath = 'output/test_roc.png'):
         # by class
 
-    # def sensitivity(self, alert_rate = 0.01):
-        # by class
+    def sensitivity(self, alert_rate = 0.01):
+        pass
+        # TODO: & by class
+
+    def plot_sensitivity(self):
+        # TODO:
+        pass
+
+    def print_confusion_matrix(self, cm):
+        cm_list = cm.tolist()
+        cm_list[0].insert(0, 'Real True')
+        cm_list[1].insert(0, 'Real False')
+        print(tabulate(cm_list, headers=['Pred True','Pred False']))
 
     def get_accuracy(self):
         logging.info(f"Test set score: {self.model.score(self.x_test, self.y_test)}")
-        # TODO: true/false accuracy:
-        logging.info(f"Test set score for true target class:")
-        logging.info(f"Test set score for false target class:")
-        # self.sensitivity()
+        cf_matrix = confusion_matrix(self.y_test, self.true_preds > 0.5)
+        self.print_confusion_matrix(cf_matrix)
+        self.sensitivity()
 
     def get_feat_imp(self, top_n = 5):
         # TODO: - because feature importance tends to inflate importance of high cardinality 

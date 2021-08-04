@@ -12,6 +12,7 @@ kaggle = "*"
 pandas-profiling = {extras = ["notebook"],version = "*"}
 scikit-learn = "*"
 pandas-streaming = "*"
+tabulate = "*"
 
 [requires]
 python_version = "3.8"
