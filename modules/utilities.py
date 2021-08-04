@@ -10,7 +10,7 @@ def setup_logging(filename):
     date = start_time.strftime("%Y-%b-%y")
     log_folder = os.path.join("logs", date)
     if not os.path.exists(log_folder):
-        os.mkdir(log_folder)
+        os.makedirs(log_folder)
 
     logging.basicConfig(
         format='%(asctime)s || %(levelname)s || %(module)s - %(funcName)s, line #%(lineno)d || %(message)s',
