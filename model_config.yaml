@@ -6,4 +6,4 @@ estimators:
 max_features:
   min: 1
   interval: 4
-cv: 5
+cv: 3
