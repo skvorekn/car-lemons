@@ -20,8 +20,8 @@ class Evaluator():
 
     def create_plots(self):
         self.plot_calibration()
-        # self.plot_roc()
-        # self.plot_sensitivity()
+        self.plot_roc()
+        self.plot_sensitivity()
 
     def plot_calibration(self):
         fig = plt.figure(1, figsize=(10, 10))
@@ -42,8 +42,9 @@ class Evaluator():
         plt.savefig(self.outpath_prefix + "_calibration.png")
         # TODO: split by class
 
-    # def plot_roc(self, outpath = 'output/test_roc.png'):
-        # by class
+    def plot_roc(self, outpath = 'output/test_roc.png'):
+        pass
+        # TODO: & by class
 
     def sensitivity(self, alert_rate = 0.01):
         pass

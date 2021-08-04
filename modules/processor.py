@@ -52,7 +52,7 @@ class DataReader():
         self.data[mmrcols] = self.data[mmrcols].apply(lambda x: np.array(x, dtype='float64'))
         logging.info(f"Onehotted dataset shape: {self.data.shape}")
 
-    # TODO - i.e. date parsing
+    # TODO: - i.e. date parsing
     def create_derived_vars(self):
         pass
 
