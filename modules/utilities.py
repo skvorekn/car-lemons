@@ -18,6 +18,18 @@ def setup_logging(filename):
         datefmt='%y/%b/%Y %H:%M:%S',
         filename=f'{log_folder}/{model}_{start_time.strftime("%H_%M_%S")}.log',
         filemode='w')
+    start_printing_logs()
+
+def start_printing_logs():
+    # define a Handler which writes INFO messages or higher to the sys.stderr
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # set a format which is simpler for console use
+    formatter = logging.Formatter("%(name)-12s: %(levelname)-8s %(message)s")
+    # tell the handler to use this format
+    console.setFormatter(formatter)
+    # add the handler to the root logger
+    logging.getLogger("").addHandler(console)
 
 def configure_script_args():
     # TODO: validate arguments
