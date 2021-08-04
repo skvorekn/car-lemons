@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import logging
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import confusion_matrix
@@ -7,13 +8,13 @@ from tabulate import tabulate
 
 class Evaluator():
     def __init__(self, final_model, x_test, y_test, outpath_prefix='output/test_'):
-        self.y_test = y_test
+        self.y_test = np.array(y_test)
         self.x_test = x_test
         self.model = final_model
 
         pred_class_probs = self.model.predict_proba(self.x_test)
         true_index = list(self.model.classes_).index(1)
-        self.true_preds = [pred[true_index] for pred in pred_class_probs]
+        self.true_preds = np.array([pred[true_index] for pred in pred_class_probs])
 
         self.outpath_prefix = outpath_prefix
 
