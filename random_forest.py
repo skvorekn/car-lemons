@@ -19,6 +19,7 @@ class RandomForest(BaseModel):
 
     def process_data(self, path, y, id_group, sample_size=1):
         data_reader = DataReader(path)
+        data_reader.create_derived_vars()
         data_reader.drop_sparse_vars()
         data_reader.drop_ids()
         data_reader.format_vars()
@@ -96,11 +97,9 @@ def main(config_path, data_path, sample_size, y, group=None):
     eval.create_plots()
     eval.get_feat_imp()
 
-    # TODO: roc, sensitivity at low alert rates
     # TODO: evaluate accuracy by unbalanced classes
     # TODO: upsample true class? something else?
-    # TODO: formatting in CI
-    # TODO: tests
+    # TODO: CI formatting & run tests
 
 
 if __name__ == "__main__":
